@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+	var usuarios = make(map[string]string)
+
 func registerUser(Nombre string, Contraseña string) string {
 		fmt.Println("Ingrese su nombre:")
 	fmt.Scanln(&Nombre)
@@ -18,10 +20,14 @@ func iniciarSesion(Nombre string, Contraseña string) string {
 	fmt.Scanln(&Nombre)
 	fmt.Println("Ingrese su contraseña:")
 	fmt.Scanln(&Contraseña)
+	if Nombre == usuarios[Nombre] {
+		return "Usuario iniciado sesión: " + Nombre
+	}
+	return "Error: usuario no encontrado"
 	if Contraseña == usuarios[Nombre] {
 		return "Usuario iniciado sesión: " + Nombre
 	}
-	return "Error: Contraseña incorrecta"
+	return "Error: contraseña incorrecta"
 }
 
 func loginMenu() {
@@ -32,7 +38,6 @@ func loginMenu() {
 
 func main() {
 
-	var usuarios = make(map[string]string)
 	var Nombre string
 	var Contraseña string
 
