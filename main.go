@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-	var usuarios = make(map[string]string)
+var usuarios = make(map[string]string)
 
 func registerUser(Nombre string, Contraseña string) string {
-		fmt.Println("Ingrese su nombre:")
+	fmt.Println("Ingrese su nombre:")
 	fmt.Scanln(&Nombre)
 	fmt.Println("Ingrese su contraseña:")
 	fmt.Scanln(&Contraseña)
@@ -23,11 +23,7 @@ func iniciarSesion(Nombre string, Contraseña string) string {
 	if Nombre == usuarios[Nombre] {
 		return "Usuario iniciado sesión: " + Nombre
 	}
-	return "Error: usuario no encontrado"
-	if Contraseña == usuarios[Nombre] {
-		return "Usuario iniciado sesión: " + Nombre
-	}
-	return "Error: contraseña incorrecta"
+	return "Error: usuario o contraseña incorrecta"
 }
 
 func loginMenu() {
@@ -42,14 +38,24 @@ func main() {
 	var Contraseña string
 
 	fmt.Println("Bienvenido, Por favor registrate o inicia sesión.")
-	loginMenu()
-	var opcion int
-	fmt.Scanln(&opcion)
-	switch {
-	case opcion == 1:
-		fmt.Println(iniciarSesion(Nombre, Contraseña))
-	case opcion == 2:
-		fmt.Println(registerUser(Nombre, Contraseña))
+	for {
+		// Código que se ejecutará para siempre hasta que se use 'break'
+		loginMenu()
+		var opcion int
+		fmt.Scanln(&opcion)
+		switch opcion {
+		case 1:
+			result := iniciarSesion(Nombre, Contraseña)
+			fmt.Println(result)
+			if result[:24] == "Usuario iniciado sesión:" {
+				fmt.Printf("Listo para transferir tu dinero, %s\n", Nombre)
+				break
+			}
+		case 2:
+			fmt.Println(registerUser(Nombre, Contraseña))
+		default:
+			fmt.Println("Opción no válida")
+		}
 	}
 
 }
