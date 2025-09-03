@@ -2,18 +2,22 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	//CREAMOS LA CONEXION A LA BASE DE DATOS MEDIANTE EL ARCHIVO DE USER
 	db, err := sql.Open("sqlite3", "./users.db")
 	if err != nil {
-		fmt.Println("Error al abrir la base de datos:", err)
-		return
+		log.Fatal(err)
 	}
 	defer db.Close()
 
-	fmt.Println("Base de datos y tabla listas.")
+	//VERIFICAR SU CONECCION  A LA DB
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
