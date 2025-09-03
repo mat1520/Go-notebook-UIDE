@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -47,4 +48,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var username, password string
+	fmt.Print("Enter username: ")
+	fmt.Scanln(&username)
+	fmt.Print("Enter password: ")
+	fmt.Scanln(&password)
+
+	// Insertar mediantelas varibale definidas
+	_, err = db.Exec("INSERT INTO users (username, password_hash) VALUES (?, ?)", username, password)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("User inserted successfully")
 }
