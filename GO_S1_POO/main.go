@@ -17,4 +17,10 @@ func main() {
 	var myInt int = 12
 	fmt.Println(myInt)
 	fmt.Println(reflect.TypeOf(float64(myInt)))
+
+	if edad >= 18 {
+		fmt.Println("Eres mayor de edad.")
+	} else {
+		fmt.Println("Eres menor de edad.")
+	}
 }
