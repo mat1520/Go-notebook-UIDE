@@ -20,4 +20,31 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Conectado a la base de datos")
+
+	//AGREGAR INFORMACION A LA TABLA USUARIOS
+	//* _, err = db.Exec("INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)", 1, "Mat", "381020")
+	//*if err != nil {
+	//*	log.Fatal(err)
+	//*}
+
+	//CONSULTA  A LA TABLA USUARIOS
+	rows, err := db.Query("SELECT id, username, password_hash FROM users")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var username, passwordHash string
+		if err := rows.Scan(&id, &username, &passwordHash); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("User: %d, %s, %s\n", id, username, passwordHash)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
 }
