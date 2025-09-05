@@ -1,26 +1,34 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
+
+func par(num int) {
+	if num%2 == 0 {
+		fmt.Println("El número es par")
+		fmt.Println(num + rand.Intn(8))
+	}
+}
+
+func impar(num int) {
+	if num%2 != 0 {
+		fmt.Println("El número es impar")
+		fmt.Println(num - rand.Intn(80))
+	}
+}
 
 func main() {
-	// Declaramos una variable de tipo entero
-	x := 10
+	//solicitud datos
+	var n int
+	fmt.Println("Valor inicial n:", n)
+	fmt.Scan(&n)
+	fmt.Println("Valor de n:", n)
 
-	// Declaramos un puntero 'p' y le asignamos la dirección de memoria de 'x'
-	p := &x
+	//funcion par
+	par(n)
+	//funcion impar
+	impar(n)
 
-	// Imprimimos el valor de 'x'
-	fmt.Println("Valor de x:", x) // Salida: Valor de x: 10
-
-	// Imprimimos la dirección de memoria de 'x' usando el puntero 'p'
-	fmt.Println("Dirección de memoria de x:", p) // Salida: Dirección de memoria de x: 0xc0000140a0 (el valor puede variar)
-
-	// Imprimimos el valor de la variable a la que apunta 'p' (desreferenciación)
-	fmt.Println("Valor al que apunta p:", *p) // Salida: Valor al que apunta p: 10
-
-	// Modificamos el valor de 'x' a través del puntero 'p'
-	*p = 20
-
-	// Imprimimos el nuevo valor de 'x'
-	fmt.Println("Nuevo valor de x:", x) // Salida: Nuevo valor de x: 20
 }
