@@ -9,12 +9,22 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type User struct {
+	ID           int
+	Username     string
+	PasswordHash string
+}
+
 type PageData struct {
 	Title   string
 	Message string
+	Users   []User // asegurar que User está definido y exportado
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	// Obtener todos los usuarios de la base de datos
+	var users []User
+
 	// Parsear el archivo HTML (se explicará a continuación)
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
@@ -26,12 +36,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	data := PageData{
 		Title:   "CRUD SQL LITE Y GO",
 		Message: "Bienvenido a la aplicación CRUD",
+		Users:   users,
 	}
 
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Error al renderizar la plantilla", http.StatusInternalServerError)
-		log.Printf("Error al ejecutar la plantilla: %v", err)
+	// No llames a w.WriteHeader(http.StatusOK) aquí antes de Execute.
+	if err := tmpl.Execute(w, data); err != nil {
+		// si falla la ejecución, enviar el error (http.Error escribe la cabecera y el cuerpo)
+		http.Error(w, "Error al ejecutar la plantilla: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
