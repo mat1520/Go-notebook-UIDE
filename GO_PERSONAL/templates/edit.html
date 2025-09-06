@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Edit User</title></head>
+<body>
+    <h1>Edit User</h1>
+    <form action="/users/edit/{{.User.ID}}" method="post">
+        <input type="text" name="name" value="{{.User.Username}}" required>
+        <input type="password" name="password" placeholder="New password" required>
+        <button type="submit">Update</button>
+    </form>
+    <a href="/">Back</a>
+</body>
+</html>

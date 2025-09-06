@@ -1,53 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User CRUD</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        form { margin-bottom: 20px; }
-        input, button { padding: 8px; margin: 5px; }
-    </style>
-</head>
-<body>
-    <h1>User Management</h1>
+package mainml>
+<html lang="es">
+import (
+	"database/sql"et="UTF-8">
+	"html/template"viewport" content="width=device-width, initial-scale=1.0">
+	"log"itle>User CRUD</title>
+	"net/http"el="stylesheet" href="/static/style.css">
+	"path"
+	"strconv"
+	"strings"er Management</h1>
     
-    <h2>Add User</h2>
-    <form action="/users" method="post">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <button type="submit">Add User</button>
-    </form>
-    
-    <h2>Users List</h2>
+	_ "github.com/mattn/go-sqlite3"
+)   <form action="/users" method="post">
+        <input type="text" name="name" placeholder="Username" required>
+type User struct {e="password" name="password" placeholder="Password" required>
+	ID           intype="submit">Add User</button>
+	Username     string
+	PasswordHash string
+}   <h2>Users List</h2>
     <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+type PageData struct {
+	Users []Usertr><th>ID</th><th>Username</th><th>Password (hash)</th><th>Actions</th></tr>
+	User  User // para editar
+}       <tbody>
             {{range .Users}}
-            <tr>
-                <td>{{.ID}}</td>
-                <td>{{.Name}}</td>
-                <td>{{.Email}}</td>
-                <td>
-                    <a href="/users/edit/{{.ID}}">Edit</a>
-                    <form action="/users/delete/{{.ID}}" method="post" style="display:inline;">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
+var tmpl *template.Template
+var db *sql.DB  <td>{{.ID}}</td>
+                <td>{{.Username}}</td>
+func main() {   <td>{{.PasswordHash}}</td>
+	var err error  <td>
+	db, err = sql.Open("sqlite3", "users.db"){.ID}}">Edit</a>
+	if err != nil {    <form action="/users/delete/{{.ID}}" method="post" style="display:inline;">
+		log.Fatal(err)        <button type="submit">Delete</button>
+	}                  </form>
+	defer db.Close()/td>
             </tr>
-            {{end}}
-        </tbody>
-    </table>
-</body>
-</html>
+	// crear tabland}}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL    );`)	if err != nil {		log.Fatal(err)	}	tmpl = template.Must(template.ParseGlob("templates/*.html"))	// servir archivos estáticos (CSS, JS, imágenes) desde /static/	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("templates"))))	http.HandleFunc("/", listHandler)	http.HandleFunc("/users", createUserHandler)             // POST	http.HandleFunc("/users/delete/", deleteUserHandler)     // POST /users/delete/{id}	http.HandleFunc("/users/edit/", editOrUpdateUserHandler) // GET and POST /users/edit/{id}	addr := ":8080"	log.Printf("Servidor escuchando en http://localhost%s\n", addr)	log.Fatal(http.ListenAndServe(addr, nil))}func listHandler(w http.ResponseWriter, r *http.Request) {	rows, err := db.Query("SELECT id, username, password_hash FROM users ORDER BY id")	if err != nil {		http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)		return	}	defer rows.Close()	users := []User{}	for rows.Next() {		var u User		if err := rows.Scan(&u.ID, &u.Username, &u.PasswordHash); err != nil {			http.Error(w, "DB scan error: "+err.Error(), http.StatusInternalServerError)			return		}		users = append(users, u)	}	data := PageData{Users: users}	if err := tmpl.ExecuteTemplate(w, "index.html", data); err != nil {		http.Error(w, "Error al ejecutar la plantilla: "+err.Error(), http.StatusInternalServerError)		return	}}func createUserHandler(w http.ResponseWriter, r *http.Request) {	if r.Method != http.MethodPost {		http.Redirect(w, r, "/", http.StatusSeeOther)		return	}	if err := r.ParseForm(); err != nil {		http.Error(w, "Parse error: "+err.Error(), http.StatusBadRequest)		return	}	username := strings.TrimSpace(r.FormValue("name"))	password := r.FormValue("password") // temporal: sin hash	if username == "" || password == "" {		http.Error(w, "username y password requeridos", http.StatusBadRequest)		return	}	_, err := db.Exec("INSERT INTO users(username, password_hash) VALUES(?, ?)", username, password)	if err != nil {		http.Error(w, "DB insert error: "+err.Error(), http.StatusInternalServerError)		return	}	http.Redirect(w, r, "/", http.StatusSeeOther)}func deleteUserHandler(w http.ResponseWriter, r *http.Request) {	if r.Method != http.MethodPost {		http.Redirect(w, r, "/", http.StatusSeeOther)		return	}	idStr := path.Base(r.URL.Path) // extrae {id} de /users/delete/{id}	id, err := strconv.Atoi(idStr)	if err != nil {		http.Error(w, "ID inválido", http.StatusBadRequest)		return	}	_, err = db.Exec("DELETE FROM users WHERE id = ?", id)	if err != nil {		http.Error(w, "DB delete error: "+err.Error(), http.StatusInternalServerError)		return	}	http.Redirect(w, r, "/", http.StatusSeeOther)}func editOrUpdateUserHandler(w http.ResponseWriter, r *http.Request) {	idStr := path.Base(r.URL.Path) // /users/edit/{id}	id, err := strconv.Atoi(idStr)	if err != nil {		http.Error(w, "ID inválido", http.StatusBadRequest)		return	}	if r.Method == http.MethodGet {		row := db.QueryRow("SELECT id, username, password_hash FROM users WHERE id = ?", id)		var u User		if err := row.Scan(&u.ID, &u.Username, &u.PasswordHash); err != nil {			if err == sql.ErrNoRows {				http.NotFound(w, r)				return			}			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)			return		}		data := PageData{User: u}		if err := tmpl.ExecuteTemplate(w, "edit.html", data); err != nil {			http.Error(w, "Error al ejecutar la plantilla: "+err.Error(), http.StatusInternalServerError)			return		}		return	}	// POST -> actualizar	if r.Method == http.MethodPost {		if err := r.ParseForm(); err != nil {			http.Error(w, "Parse error: "+err.Error(), http.StatusBadRequest)			return		}		username := strings.TrimSpace(r.FormValue("name"))		password := r.FormValue("password") // temporal: sin hash		if username == "" || password == "" {			http.Error(w, "username y password requeridos", http.StatusBadRequest)			return		}		_, err := db.Exec("UPDATE users SET username = ?, password_hash = ? WHERE id = ?", username, password, id)		if err != nil {			http.Error(w, "DB update error: "+err.Error(), http.StatusInternalServerError)			return		}		http.Redirect(w, r, "/", http.StatusSeeOther)		return	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
