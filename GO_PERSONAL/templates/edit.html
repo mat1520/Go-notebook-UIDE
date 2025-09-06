@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"><title>Edit User</title></head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
 <body>
+<div class="container">
     <h1>Edit User</h1>
-    <form action="/users/edit/{{.User.ID}}" method="post">
+    <form action="/users/edit/{{.User.ID}}" method="post" class="form-row">
         <input type="text" name="name" value="{{.User.Username}}" required>
         <input type="password" name="password" placeholder="New password" required>
         <button type="submit">Update</button>
     </form>
-    <a href="/">Back</a>
+    <p><a href="/">Back</a></p>
+</div>
 </body>
 </html>
