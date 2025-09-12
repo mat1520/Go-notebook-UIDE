@@ -5,9 +5,53 @@ import (
 	"math"
 )
 
+func preguntarRepetir() bool {
+	var repetir string
+	fmt.Println("¿Deseas realizar otra operación? (si/no)")
+	fmt.Scan(&repetir)
+	return repetir == "si" || repetir == "sí"
+}
+
 func main() {
 	fmt.Println("Hecho por: Ariel Melo")
 
+	var name string
+	fmt.Println("INGRESA TU NOMBRE:")
+	fmt.Scan(&name)
+	fmt.Printf("BIENVENIDO %s\n", name)
+
+	for {
+		// MENU
+		fmt.Printf("Hola %s, este es un programa en GO que realiza operaciones matemáticas y genera la serie de Fibonacci.\n", name)
+		fmt.Println("Elige una opción:")
+		fmt.Println("1. Operaciones Matematicas")
+		fmt.Println("2. Serie de Fibonacci")
+
+		var choice int
+		fmt.Scan(&choice)
+
+		// Ejecutar la opción seleccionada
+
+		switch choice {
+		case 1:
+			operacionesMatematicas()
+		case 2:
+			serieFibonacci()
+		default:
+			fmt.Println("Opción no válida.")
+		}
+
+		if !preguntarRepetir() {
+			fmt.Printf("Gracias por usar el programa %s.\n", name)
+			break
+		}
+	}
+}
+
+func operacionesMatematicas() {
+	fmt.Println("OPERACIONES MATEMATICAS")
+
+	//USO DE LA LIBRERIA MATH
 	//DATO FLOAT64
 	numero_raiz_cuadrada := 10.20
 	raiz_cuadrada := math.Sqrt(numero_raiz_cuadrada)
@@ -37,7 +81,9 @@ func main() {
 	fmt.Printf("El valor absoluto de %d es %f\n", numero_absoluto, absoluto)
 
 	fmt.Println("Fin del PRIMER EJERCICIO")
+}
 
+func serieFibonacci() {
 	fmt.Println("SERIE DE FIBONACCI")
 
 	var n int
@@ -50,5 +96,6 @@ func main() {
 		fmt.Printf("%d ", a)
 		a, b = b, a+b
 	}
+	fmt.Println("\nFin del SEGUNDO EJERCICIO")
 
 }
