@@ -46,6 +46,9 @@ func main() {
 
 	tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
+	// servir archivos estáticos (CSS, imágenes, JS) desde /static/ -> ./static/
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/users", createUserHandler)             // POST
 	http.HandleFunc("/users/delete/", deleteUserHandler)     // POST /users/delete/{id}
