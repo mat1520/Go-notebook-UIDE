@@ -8,6 +8,18 @@ type Device interface {
 	TurnOff()
 }
 
+type Dimable interface {
+	SetBrightness(level int)
+}
+
+type Speaker interface {
+	Play(sound string)
+}
+
+type TemperatureControl struct {
+	Temperature float64
+}
+
 type Light struct {
 	On bool
 }
@@ -27,6 +39,10 @@ func (l *Light) TurnOff() {
 	l.On = false
 }
 
+func (l *Light) SetBrightness(level int) {
+	fmt.Printf("Setting brightness to %d\n", level)
+}
+
 func main() {
 	var smartLight Device
 	smartLight = &Light{true}
@@ -34,4 +50,5 @@ func main() {
 	fmt.Println(smartLight.Status()) // Output: Light is On
 	smartLight.TurnOff()
 	fmt.Println(smartLight.Status()) // Output: Light is Off
+
 }
