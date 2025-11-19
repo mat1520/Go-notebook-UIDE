@@ -48,7 +48,8 @@ func main() {
 	smartLight = &Light{true}
 
 	fmt.Println(smartLight.Status()) // Output: Light is On
-	smartLight.TurnOff()
+	smartLight.TurnOn()
 	fmt.Println(smartLight.Status()) // Output: Light is Off
+	smartLight.TurnOff()
 
 }
