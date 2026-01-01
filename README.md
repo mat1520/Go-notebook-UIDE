@@ -98,7 +98,7 @@ Esto generará un ejecutable que puedes correr directamente.
 ## 📝 Notas
 
 - Cada carpeta contiene ejemplos independientes
-- Los archivos `go.mod` están incluidos donde son necesarios
+- Algunas carpetas incluyen archivos `go.mod` para manejo de módulos de Go
 - Los comentarios en el código están principalmente en español para facilitar el aprendizaje
 
 ## 🤝 Contribuciones
